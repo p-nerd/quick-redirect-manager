@@ -1,6 +1,6 @@
 {
     "name": "p-nerd/quick-redirect-manager",
-    "description": "A lightweight, user-friendly plugin to manage URL redirections",
+    "description": "A lightweight, user-friendly plugin to manage URL redirections. No database tables, just simple WordPress-native storage.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "autoload": {
@@ -11,10 +11,18 @@
     "authors": [
         {
             "name": "Shihab Mahamud",
-            "email": "shihab4t@gmail.com"
+            "email": "shihab4t@gmail.com",
+            "homepage": "https://github.com/p-nerd",
+            "role": "Developer"
         }
     ],
     "require": {
-        "php": ">=7.4"
-    }
+        "php": ">=8.0"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

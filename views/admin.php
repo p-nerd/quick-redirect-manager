@@ -89,7 +89,7 @@ if (! defined('ABSPATH')) {
                         'delete_nonce'
                     ); ?>"
                        onclick="return confirm('Are you sure you want to delete this redirect?')"
-                       class="button button-small">Delete</a>
+                       class="button button-small button-link-delete">Delete</a>
                 </td>
             </tr>
             <?php } ?>
