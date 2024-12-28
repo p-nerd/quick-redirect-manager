@@ -9,14 +9,10 @@ if [ "$1" = "zip" ]; then
         echo "[SUCCESS] Removed old $NAME file."
     fi
 
-    if [ -f ".zip.log" ]; then
-        rm ".zip.log"
-    fi
-
     echo "[INFO] Install composer..."
     composer install
 
     echo "[INFO] Zipping the current directory..."
-    zip -r "$NAME" . > .zip.log
+    zip -r "$NAME" .
     echo "[SUCCESS] Zipped the current directory and created $NAME"
 fi
