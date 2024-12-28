@@ -2,20 +2,17 @@
 
 namespace PNerd\QuickRedirectManager;
 
-class UrlValidator
+class Url
 {
     /**
      * List of allowed URL schemes
      *
-     * @var array
+     * @var list<string>
      */
     private static $allowedSchemes = ['http', 'https'];
 
     /**
      * Validates a URL or path
-     *
-     * @param  string  $url  The URL or path to validate
-     * @return bool True if valid, false otherwise
      */
     public static function isValid(string $url): bool
     {
@@ -37,9 +34,6 @@ class UrlValidator
 
     /**
      * Normalizes a URL or path
-     *
-     * @param  string  $url  The URL or path to normalize
-     * @return string Normalized URL or path
      */
     public static function normalizeUrl(string $url): string
     {
@@ -55,9 +49,6 @@ class UrlValidator
 
     /**
      * Checks if the given string is a relative path
-     *
-     * @param  string  $path  The path to check
-     * @return bool True if it's a relative path
      */
     private static function isRelativePath(string $path): bool
     {
@@ -69,9 +60,6 @@ class UrlValidator
 
     /**
      * Normalizes a full URL
-     *
-     * @param  string  $url  The URL to normalize
-     * @return string Normalized URL
      */
     private static function normalizeFullUrl(string $url): string
     {
@@ -111,9 +99,6 @@ class UrlValidator
 
     /**
      * Normalizes a path
-     *
-     * @param  string  $path  The path to normalize
-     * @return string Normalized path
      */
     private static function normalizePath(string $path): string
     {
@@ -131,64 +116,5 @@ class UrlValidator
         }
 
         return $path;
-    }
-
-    /**
-     * Gets the domain from a URL
-     *
-     * @param  string  $url  The URL to extract domain from
-     * @return string|null The domain or null if not found
-     */
-    public static function getDomain(string $url): ?string
-    {
-        if (! filter_var($url, FILTER_VALIDATE_URL)) {
-            return null;
-        }
-
-        $parsedUrl = parse_url($url);
-
-        return $parsedUrl['host'] ?? null;
-    }
-
-    /**
-     * Checks if URL points to external domain
-     *
-     * @param  string  $url  The URL to check
-     * @param  string|null  $currentDomain  Current domain to compare against
-     * @return bool True if external URL
-     */
-    public static function isExternalUrl(string $url, ?string $currentDomain = null): bool
-    {
-        if (! filter_var($url, FILTER_VALIDATE_URL)) {
-            return false;
-        }
-
-        $urlDomain = self::getDomain($url);
-        if (! $urlDomain) {
-            return false;
-        }
-
-        if ($currentDomain === null) {
-            $currentDomain = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
-        }
-
-        return strtolower($urlDomain) !== strtolower($currentDomain);
-    }
-
-    /**
-     * Gets path from URL or returns the path if already a path
-     *
-     * @param  string  $url  The URL or path
-     * @return string The path component
-     */
-    public static function getPath(string $url): string
-    {
-        if (! filter_var($url, FILTER_VALIDATE_URL)) {
-            return self::normalizePath($url);
-        }
-
-        $path = parse_url($url, PHP_URL_PATH) ?? '/';
-
-        return self::normalizePath($path);
     }
 }

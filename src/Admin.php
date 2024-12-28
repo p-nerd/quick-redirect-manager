@@ -49,7 +49,7 @@ class Admin
         }
 
         $source_url = sanitize_text_field($_POST['source_url']);
-        if (! UrlValidator::isValid($source_url)) {
+        if (! Url::isValid($source_url)) {
             add_settings_error(
                 'qrm_messages',
                 'qrm_invalid_source',
@@ -60,7 +60,7 @@ class Admin
             return null;
         }
 
-        $source_url = UrlValidator::normalizeUrl($source_url);
+        $source_url = Url::normalizeUrl($source_url);
         if (empty($source_url)) {
             return;
         }
@@ -71,7 +71,7 @@ class Admin
         }
 
         $target_url = sanitize_text_field($_POST['target_url']);
-        if (! UrlValidator::isValid($target_url)) {
+        if (! Url::isValid($target_url)) {
             add_settings_error(
                 'qrm_messages',
                 'qrm_invalid_target',
@@ -82,7 +82,7 @@ class Admin
             return null;
         }
 
-        $target_url = UrlValidator::normalizeUrl($target_url);
+        $target_url = Url::normalizeUrl($target_url);
         if (empty($target_url)) {
             return;
         }

@@ -15,7 +15,7 @@ class Redirector
             return;
         }
 
-        $current_path = UrlValidator::normalizeUrl($_SERVER['REQUEST_URI']);
+        $current_path = Url::normalizeUrl($_SERVER['REQUEST_URI']);
 
         $redirection = Redirection::get($current_path);
 
