@@ -1,13 +1,23 @@
 <?php
-
 use PNerd\QuickRedirectManager\Config;
 
 if (! defined('ABSPATH')) {
     exit;
-} ?>
+}
+?>
 
 <div class="wrap">
-    <h1>Quick Redirect Manager</h1>
+    <h1><?php echo esc_html(Config::SETTINGS_PAGE_TITLE); ?></h1>
+
+    <div class="notice notice-info">
+        <p><strong>Supported Redirect Types:</strong></p>
+        <ul style="list-style-type: disc; padding-left: 20px;">
+            <li>Internal path to internal path (e.g., <code>/old-page</code> → <code>/new-page</code>)</li>
+            <li>Internal path to external URL (e.g., <code>/external-link</code> → <code>https://example.com</code>)</li>
+            <li>Full URL to internal path (e.g., <code>https://yourdomain.com/old-page</code> → <code>/new-page</code>)</li>
+            <li>Full URL to external URL (e.g., <code>https://yourdomain.com/old-page</code> → <code>https://example.com</code>)</li>
+        </ul>
+    </div>
 
     <?php settings_errors('qrm_messages'); ?>
 
@@ -20,14 +30,22 @@ if (! defined('ABSPATH')) {
                 <th><label for="source_url">Source URL</label></th>
                 <td>
                     <input type="text" name="source_url" id="source_url" class="regular-text" required>
-                    <p class="description">Enter the URL you want to redirect from (e.g., /old-page)</p>
+                    <p class="description">Enter the URL you want to redirect from. You can use either:</p>
+                    <ul class="description" style="list-style-type: disc; margin-left: 20px; margin-top: 5px;">
+                        <li>Internal path (e.g., <code>/old-page</code>)</li>
+                        <li>Full URL (e.g., <code>https://yourdomain.com/old-page</code>)</li>
+                    </ul>
                 </td>
             </tr>
             <tr>
                 <th><label for="target_url">Target URL</label></th>
                 <td>
                     <input type="text" name="target_url" id="target_url" class="regular-text" required>
-                    <p class="description">Enter the URL you want to redirect to (e.g., /new-page)</p>
+                    <p class="description">Enter the URL you want to redirect to. You can use either:</p>
+                    <ul class="description" style="list-style-type: disc; margin-left: 20px; margin-top: 5px;">
+                        <li>Internal path (e.g., <code>/new-page</code>)</li>
+                        <li>External URL (e.g., <code>https://example.com</code>)</li>
+                    </ul>
                 </td>
             </tr>
             <tr>
@@ -66,17 +84,12 @@ if (! defined('ABSPATH')) {
                 <td><?php echo esc_html($redirect['redirect_type']); ?></td>
                 <td><?php echo esc_html($redirect['hits']); ?></td>
                 <td><?php echo esc_html($redirect['created_at']); ?></td>
-
-                <?php
-                $query = Config::SETTINGS_PAGE_SLUG;
-                $delete_url = wp_nonce_url(
-                    admin_url("options-general.php?page=$query&action=delete&source=".urlencode($source)),
-                    'delete_redirect',
-                    'delete_nonce'
-                );
-                ?>
                 <td>
-                <a href="<?= $delete_url ?>"
+                    <a href="<?php echo wp_nonce_url(
+                        admin_url('options-general.php?page='.Config::SETTINGS_PAGE_SLUG.'&action=delete&source='.urlencode($source)),
+                        'delete_redirect',
+                        'delete_nonce'
+                    ); ?>"
                        onclick="return confirm('Are you sure you want to delete this redirect?')"
                        class="button button-small">Delete</a>
                 </td>
