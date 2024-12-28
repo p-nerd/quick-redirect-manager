@@ -2,25 +2,27 @@
 
 namespace PNerd\QuickRedirectManager;
 
-use PNerd\QuickRedirectManager\Config;
-
-class Admin {
-    public function __construct() {
+class Admin
+{
+    public function __construct()
+    {
         add_action('admin_menu', [$this, 'addMenuPage']);
     }
 
-    public function addMenuPage() {
+    public function addMenuPage()
+    {
         add_options_page(
-            Config::SETTINGS_PAGE_TITLE ,
-            Config::SETTINGS_PAGE_TITLE ,
+            Config::SETTINGS_PAGE_TITLE,
+            Config::SETTINGS_PAGE_TITLE,
             'manage_options',
             Config::SETTINGS_PAGE_SLUG,
             [$this, 'renderPage']
         );
     }
 
-    public function renderPage() {
-        if (!current_user_can('manage_options')) {
+    public function renderPage()
+    {
+        if (! current_user_can('manage_options')) {
             wp_die('Unauthorized user');
         }
 
@@ -28,16 +30,17 @@ class Admin {
         $this->handleDeletion();
 
         $redirects = get_option(Config::REDIRECTIONS_OPTION_KEY, []);
-        echo View::render('admin-page', ['redirects' => $redirects]);
+        echo View::render('admin', ['redirects' => $redirects]);
     }
 
-    private function handleFormSubmission() {
-        if (!isset($_POST['submit_redirect'])) {
+    private function handleFormSubmission()
+    {
+        if (! isset($_POST['submit_redirect'])) {
             return;
         }
 
-        if (!isset($_POST['redirect_nonce']) ||
-            !wp_verify_nonce($_POST['redirect_nonce'], 'add_redirect')) {
+        if (! isset($_POST['redirect_nonce']) ||
+            ! wp_verify_nonce($_POST['redirect_nonce'], 'add_redirect')) {
             wp_die('Security check failed');
         }
 
@@ -48,7 +51,7 @@ class Admin {
             'target_url' => sanitize_text_field($_POST['target_url']),
             'redirect_type' => intval($_POST['redirect_type']),
             'hits' => 0,
-            'created_at' => current_time('mysql')
+            'created_at' => current_time('mysql'),
         ];
 
         update_option(Config::REDIRECTIONS_OPTION_KEY, $redirects);
@@ -60,13 +63,14 @@ class Admin {
         );
     }
 
-    private function handleDeletion() {
-        if (!isset($_GET['action']) || $_GET['action'] !== 'delete' || !isset($_GET['source'])) {
+    private function handleDeletion()
+    {
+        if (! isset($_GET['action']) || $_GET['action'] !== 'delete' || ! isset($_GET['source'])) {
             return;
         }
 
-        if (!isset($_GET['delete_nonce']) ||
-            !wp_verify_nonce($_GET['delete_nonce'], 'delete_redirect')) {
+        if (! isset($_GET['delete_nonce']) ||
+            ! wp_verify_nonce($_GET['delete_nonce'], 'delete_redirect')) {
             wp_die('Security check failed');
         }
 
