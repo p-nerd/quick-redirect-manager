@@ -14,11 +14,8 @@ class Admin
         'redirect_deleted' => 'Redirection deleted successfully!',
     ];
 
-    private $redirection;
-
     public function __construct()
     {
-        $this->redirection = new Redirection;
         add_action('admin_menu', [$this, 'addMenuPage']);
     }
 
@@ -42,9 +39,7 @@ class Admin
         $this->handleFormSubmission();
         $this->handleDeletion();
 
-        echo View::render('admin', [
-            'redirects' => $this->getRedirects(),
-        ]);
+        echo View::render('admin', ['redirects' => $this->getRedirects()]);
     }
 
     private function handleFormSubmission()
@@ -68,14 +63,8 @@ class Admin
         }
 
         $redirect_type = $this->getRedirectType();
-        $result = $this->redirection->add($source_url, $target_url, $redirect_type);
 
-        add_settings_error(
-            'qrm_messages',
-            $result['success'] ? 'qrm_redirect_added' : 'qrm_duplicate_source',
-            $result['message'],
-            $result['success'] ? 'updated' : 'error'
-        );
+        $this->addRedirect($source_url, $target_url, $redirect_type);
     }
 
     private function handleDeletion()
@@ -90,13 +79,7 @@ class Admin
 
         $source = $this->getSourceFromRequest();
         if ($source) {
-            $result = $this->redirection->delete($source);
-            add_settings_error(
-                'qrm_messages',
-                $result['success'] ? 'qrm_redirect_deleted' : 'qrm_redirect_error',
-                $result['message'],
-                $result['success'] ? 'updated' : 'error'
-            );
+            $this->deleteRedirect($source);
         }
     }
 
@@ -163,7 +146,38 @@ class Admin
 
     private function getRedirects(): array
     {
-        return $this->redirection->getAll();
+        return get_option(Config::REDIRECTIONS_OPTION_KEY, []);
+    }
+
+    private function addRedirect(string $source_url, string $target_url, int $redirect_type)
+    {
+        $redirects = $this->getRedirects();
+
+        if (isset($redirects[$source_url])) {
+            add_settings_error(
+                'qrm_messages',
+                'qrm_duplicate_source',
+                $this->messages['duplicate_source'],
+                'error'
+            );
+
+            return;
+        }
+
+        $redirects[$source_url] = [
+            'target_url' => $target_url,
+            'redirect_type' => $redirect_type,
+            'hits' => 0,
+            'created_at' => current_time('mysql'),
+        ];
+
+        update_option(Config::REDIRECTIONS_OPTION_KEY, $redirects);
+        add_settings_error(
+            'qrm_messages',
+            'qrm_redirect_added',
+            $this->messages['redirect_added'],
+            'updated'
+        );
     }
 
     private function isDeletionRequest(): bool
@@ -180,5 +194,21 @@ class Admin
         }
 
         return sanitize_text_field(urldecode($_GET['source']));
+    }
+
+    private function deleteRedirect(string $source)
+    {
+        $redirects = $this->getRedirects();
+
+        if (isset($redirects[$source])) {
+            unset($redirects[$source]);
+            update_option(Config::REDIRECTIONS_OPTION_KEY, $redirects);
+            add_settings_error(
+                'qrm_messages',
+                'qrm_redirect_deleted',
+                $this->messages['redirect_deleted'],
+                'updated'
+            );
+        }
     }
 }
