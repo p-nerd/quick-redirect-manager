@@ -1,0 +1,17 @@
+{
+    "name": "p-nerd/quick-redirect-manager",
+    "description": "A lightweight, user-friendly plugin to manage URL redirections",
+    "type": "wordpress-plugin",
+    "autoload": {
+        "psr-4": {
+            "PNerd\\QuickRedirectManager\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Shihab Mahamud",
+            "email": "shihab4t@gmail.com"
+        }
+    ],
+    "require": {}
+}
