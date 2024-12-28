@@ -71,7 +71,6 @@ if (! defined('ABSPATH')) {
                 <th>Source URL</th>
                 <th>Target URL</th>
                 <th>Type</th>
-                <th>Hits</th>
                 <th>Created</th>
                 <th>Actions</th>
             </tr>
@@ -82,7 +81,6 @@ if (! defined('ABSPATH')) {
                 <td><?php echo esc_html($source); ?></td>
                 <td><?php echo esc_html($redirect['target_url']); ?></td>
                 <td><?php echo esc_html($redirect['redirect_type']); ?></td>
-                <td><?php echo esc_html($redirect['hits']); ?></td>
                 <td><?php echo esc_html($redirect['created_at']); ?></td>
                 <td>
                     <a href="<?php echo wp_nonce_url(

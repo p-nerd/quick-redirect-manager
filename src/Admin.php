@@ -32,7 +32,7 @@ class Admin
 
     public function renderPage()
     {
-        if (! $this->canUserManage()) {
+        if (! current_user_can('manage_options')) {
             wp_die($this->messages['unauthorized']);
         }
 
@@ -44,6 +44,7 @@ class Admin
 
     private function handleFormSubmission()
     {
+        // permission checking
         if (! isset($_POST['submit_redirect'])) {
             return;
         }
@@ -52,55 +53,12 @@ class Admin
             wp_die($this->messages['security_check']);
         }
 
-        $source_url = $this->getSourceUrl();
-        if (empty($source_url)) {
-            return;
-        }
-
-        $target_url = $this->getTargetUrl();
-        if (empty($target_url)) {
-            return;
-        }
-
-        $redirect_type = $this->getRedirectType();
-
-        $this->addRedirect($source_url, $target_url, $redirect_type);
-    }
-
-    private function handleDeletion()
-    {
-        if (! $this->isDeletionRequest()) {
-            return;
-        }
-
-        if (! $this->verifyNonce('delete_nonce', 'delete_redirect')) {
-            wp_die($this->messages['security_check']);
-        }
-
-        $source = $this->getSourceFromRequest();
-        if ($source) {
-            $this->deleteRedirect($source);
-        }
-    }
-
-    private function canUserManage(): bool
-    {
-        return current_user_can('manage_options');
-    }
-
-    private function verifyNonce(string $field, string $action): bool
-    {
-        return isset($_REQUEST[$field]) && wp_verify_nonce($_REQUEST[$field], $action);
-    }
-
-    private function getSourceUrl(): ?string
-    {
+        // validate source_url
         if (! isset($_POST['source_url'])) {
-            return null;
+            return;
         }
 
         $source_url = sanitize_text_field($_POST['source_url']);
-
         if (! UrlValidator::isValid($source_url)) {
             add_settings_error(
                 'qrm_messages',
@@ -112,17 +70,17 @@ class Admin
             return null;
         }
 
-        return UrlValidator::normalizeUrl($source_url);
-    }
+        $source_url = UrlValidator::normalizeUrl($source_url);
+        if (empty($source_url)) {
+            return;
+        }
 
-    private function getTargetUrl(): ?string
-    {
+        // validate target_url
         if (! isset($_POST['target_url'])) {
             return null;
         }
 
         $target_url = sanitize_text_field($_POST['target_url']);
-
         if (! UrlValidator::isValid($target_url)) {
             add_settings_error(
                 'qrm_messages',
@@ -134,81 +92,64 @@ class Admin
             return null;
         }
 
-        return UrlValidator::normalizeUrl($target_url);
+        $target_url = UrlValidator::normalizeUrl($target_url);
+        if (empty($target_url)) {
+            return;
+        }
+
+        // validate redirect_type
+        $type = isset($_POST['redirect_type']) ? intval($_POST['redirect_type']) : 301;
+        $redirect_type = in_array($type, [301, 302]) ? $type : 301;
+
+        // save redirection
+        if (Redirection::add($source_url, $target_url, $redirect_type)) {
+            add_settings_error(
+                'qrm_messages',
+                'qrm_redirect_added',
+                $this->messages['redirect_added'],
+                'updated'
+            );
+        }
+
     }
 
-    private function getRedirectType(): int
+    private function handleDeletion()
     {
-        $type = isset($_POST['redirect_type']) ? intval($_POST['redirect_type']) : 301;
+        // check is delete request
+        if (! isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['source'])) {
+            return;
+        }
 
-        return in_array($type, [301, 302]) ? $type : 301;
+        if (! $this->verifyNonce('delete_nonce', 'delete_redirect')) {
+            wp_die($this->messages['security_check']);
+        }
+
+        // validate source_url
+        if (! isset($_GET['source'])) {
+            return null;
+        }
+        $source = sanitize_text_field(urldecode($_GET['source']));
+
+        // delete redirection
+        if ($source) {
+            if (Redirection::delete($source)) {
+                add_settings_error(
+                    'qrm_messages',
+                    'qrm_redirect_deleted',
+                    $this->messages['redirect_deleted'],
+                    'updated'
+                );
+            }
+        }
+    }
+
+    private function verifyNonce(string $field, string $action): bool
+    {
+        return isset($_REQUEST[$field]) && wp_verify_nonce($_REQUEST[$field], $action);
     }
 
     private function getRedirects(): array
     {
         return get_option(Config::REDIRECTIONS_OPTION_KEY, []);
-    }
-
-    private function addRedirect(string $source_url, string $target_url, int $redirect_type)
-    {
-        $redirects = $this->getRedirects();
-
-        if (isset($redirects[$source_url])) {
-            add_settings_error(
-                'qrm_messages',
-                'qrm_duplicate_source',
-                $this->messages['duplicate_source'],
-                'error'
-            );
-
-            return;
-        }
-
-        $redirects[$source_url] = [
-            'target_url' => $target_url,
-            'redirect_type' => $redirect_type,
-            'hits' => 0,
-            'created_at' => current_time('mysql'),
-        ];
-
-        update_option(Config::REDIRECTIONS_OPTION_KEY, $redirects);
-        add_settings_error(
-            'qrm_messages',
-            'qrm_redirect_added',
-            $this->messages['redirect_added'],
-            'updated'
-        );
-    }
-
-    private function isDeletionRequest(): bool
-    {
-        return isset($_GET['action'])
-            && $_GET['action'] === 'delete'
-            && isset($_GET['source']);
-    }
-
-    private function getSourceFromRequest(): ?string
-    {
-        if (! isset($_GET['source'])) {
-            return null;
-        }
-
-        return sanitize_text_field(urldecode($_GET['source']));
-    }
-
-    private function deleteRedirect(string $source)
-    {
-        $redirects = $this->getRedirects();
-
-        if (isset($redirects[$source])) {
-            unset($redirects[$source]);
-            update_option(Config::REDIRECTIONS_OPTION_KEY, $redirects);
-            add_settings_error(
-                'qrm_messages',
-                'qrm_redirect_deleted',
-                $this->messages['redirect_deleted'],
-                'updated'
-            );
-        }
     }
 }
