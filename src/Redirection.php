@@ -15,9 +15,9 @@ class Redirection
     /**
      * Gets a specific redirection by source URL
      */
-    public function get(string $source_url): ?array
+    public static function get(string $source_url): ?array
     {
-        $redirects = $this->all();
+        $redirects = self::all();
 
         return $redirects[$source_url] ?? null;
     }
@@ -51,5 +51,15 @@ class Redirection
         update_option(Config::REDIRECTIONS_OPTION_KEY, $redirects);
 
         return true;
+    }
+
+    public static function targetUrl(array $redirection)
+    {
+        return $redirection['target_url'];
+    }
+
+    public static function redirectType(array $redirection)
+    {
+        return $redirection['redirect_type'];
     }
 }

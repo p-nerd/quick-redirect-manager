@@ -14,8 +14,6 @@ if (! defined('ABSPATH')) {
         <ul style="list-style-type: disc; padding-left: 20px;">
             <li>Internal path to internal path (e.g., <code>/old-page</code> → <code>/new-page</code>)</li>
             <li>Internal path to external URL (e.g., <code>/external-link</code> → <code>https://example.com</code>)</li>
-            <li>Full URL to internal path (e.g., <code>https://yourdomain.com/old-page</code> → <code>/new-page</code>)</li>
-            <li>Full URL to external URL (e.g., <code>https://yourdomain.com/old-page</code> → <code>https://example.com</code>)</li>
         </ul>
     </div>
 
@@ -33,7 +31,6 @@ if (! defined('ABSPATH')) {
                     <p class="description">Enter the URL you want to redirect from. You can use either:</p>
                     <ul class="description" style="list-style-type: disc; margin-left: 20px; margin-top: 5px;">
                         <li>Internal path (e.g., <code>/old-page</code>)</li>
-                        <li>Full URL (e.g., <code>https://yourdomain.com/old-page</code>)</li>
                     </ul>
                 </td>
             </tr>

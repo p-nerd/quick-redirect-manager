@@ -43,6 +43,8 @@ class UrlValidator
      */
     public static function normalizeUrl(string $url): string
     {
+        $url = strtok($url, '?');
+
         // If it's already a full URL, validate and return
         if (filter_var($url, FILTER_VALIDATE_URL)) {
             return self::normalizeFullUrl($url);

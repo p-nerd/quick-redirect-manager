@@ -4,33 +4,34 @@ namespace PNerd\QuickRedirectManager;
 
 class Redirector
 {
-    private $option_name = 'qrm_redirections';
-
     public function __construct()
     {
         add_action('template_redirect', [$this, 'handleRedirection']);
     }
 
-    public function handleRedirection()
+    public function handleRedirection(): void
     {
         if (is_admin()) {
             return;
         }
 
-        $current_url = $_SERVER['REQUEST_URI'];
-        $redirects = get_option($this->option_name, []);
+        $current_path = UrlValidator::normalizeUrl($_SERVER['REQUEST_URI']);
 
-        if (! isset($redirects[$current_url])) {
+        $redirection = Redirection::get($current_path);
+
+        if (! $redirection) {
             return;
         }
 
-        $redirect = $redirects[$current_url];
+        $targetUrl = Redirection::targetUrl($redirection);
+        $redirectType = Redirection::redirectType($redirection);
 
-        // Update hit counter
-        $redirects[$current_url]['hits']++;
-        update_option($this->option_name, $redirects);
+        $this->performRedirect($targetUrl, $redirectType);
+    }
 
-        wp_redirect($redirect['target_url'], $redirect['redirect_type']);
+    private function performRedirect(string $url, int $status): void
+    {
+        wp_redirect($url, $status);
         exit;
     }
 }
