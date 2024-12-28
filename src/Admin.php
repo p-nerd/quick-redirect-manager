@@ -4,16 +4,6 @@ namespace PNerd\QuickRedirectManager;
 
 class Admin
 {
-    private $messages = [
-        'invalid_source_url' => 'Invalid source URL format.',
-        'invalid_target_url' => 'Invalid target URL format.',
-        'duplicate_source' => 'A redirect for this source URL already exists.',
-        'unauthorized' => 'Unauthorized user',
-        'security_check' => 'Security check failed',
-        'redirect_added' => 'Redirection added successfully!',
-        'redirect_deleted' => 'Redirection deleted successfully!',
-    ];
-
     public function __construct()
     {
         add_action('admin_menu', [$this, 'addMenuPage']);
@@ -116,7 +106,7 @@ class Admin
     private function handleDeletion()
     {
         // check is delete request
-        if (! isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['source'])) {
+        if (! (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['source']))) {
             return;
         }
 
@@ -152,4 +142,14 @@ class Admin
     {
         return get_option(Config::REDIRECTIONS_OPTION_KEY, []);
     }
+
+    private $messages = [
+        'invalid_source_url' => 'Invalid source URL format.',
+        'invalid_target_url' => 'Invalid target URL format.',
+        'duplicate_source' => 'A redirect for this source URL already exists.',
+        'unauthorized' => 'Unauthorized user',
+        'security_check' => 'Security check failed',
+        'redirect_added' => 'Redirection added successfully!',
+        'redirect_deleted' => 'Redirection deleted successfully!',
+    ];
 }
