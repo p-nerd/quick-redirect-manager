@@ -48,6 +48,57 @@ class Url
     }
 
     /**
+     * Extracts and returns query parameters from a URL as an array
+     *
+     * @return array<string, string>
+     */
+    public static function extractQueries(string $url): array
+    {
+        // If URL is invalid, return empty array
+        if (! self::isValid($url)) {
+            return [];
+        }
+
+        // Parse the URL and extract query string
+        $parsedUrl = parse_url($url);
+        if (! isset($parsedUrl['query'])) {
+            return [];
+        }
+
+        // Parse query string into array
+        $queryParams = [];
+        parse_str($parsedUrl['query'], $queryParams);
+
+        return $queryParams;
+    }
+
+    /**
+     * Concatenates a URL with query parameters
+     *
+     * @param  array<string, string>  $queries
+     */
+    public static function concatQueries(string $url, array $queries): string
+    {
+        // If no queries provided, return the original URL
+        if (empty($queries)) {
+            return $url;
+        }
+
+        // Check if URL already has query parameters
+        $hasQueries = str_contains($url, '?');
+
+        // Build query string from new queries
+        $queryString = http_build_query($queries);
+
+        // Concatenate properly based on existing query parameters
+        if ($hasQueries) {
+            return $url.'&'.$queryString;
+        }
+
+        return $url.'?'.$queryString;
+    }
+
+    /**
      * Checks if the given string is a relative path
      */
     private static function isRelativePath(string $path): bool

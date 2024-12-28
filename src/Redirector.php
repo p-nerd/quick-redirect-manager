@@ -15,9 +15,12 @@ class Redirector
             return;
         }
 
-        $current_path = Url::normalizeUrl($_SERVER['REQUEST_URI']);
+        $serverPath = $_SERVER['REQUEST_URI'];
 
-        $redirection = Redirection::get($current_path);
+        $queries = Url::extractQueries($serverPath);
+        $currentPath = Url::normalizeUrl($serverPath);
+
+        $redirection = Redirection::get($currentPath);
 
         if (! $redirection) {
             return;
@@ -26,7 +29,9 @@ class Redirector
         $targetUrl = Redirection::targetUrl($redirection);
         $redirectType = Redirection::redirectType($redirection);
 
-        $this->performRedirect($targetUrl, $redirectType);
+        $redirectUrl = Url::concatQueries($targetUrl, $queries);
+
+        $this->performRedirect($redirectUrl, $redirectType);
     }
 
     private function performRedirect(string $url, int $status): void
