@@ -2,6 +2,9 @@
 
 namespace PNerd\QuickRedirectManager\Lib;
 
+use PNerd\QuickRedirectManager\DTO\Redirect;
+use PNerd\QuickRedirectManager\Redirection;
+
 class Url
 {
     /**
@@ -33,6 +36,17 @@ class Url
     }
 
     /**
+     * Checks if the given string is a relative path
+     */
+    private static function isRelativePath(string $path): bool
+    {
+        // Path must start with / and not contain protocol or domain
+        return str_starts_with($path, '/') &&
+               ! str_contains($path, '://') &&
+               ! preg_match('/^\/\//', $path);
+    }
+
+    /**
      * Normalizes a URL or path
      */
     public static function normalizeUrl(string $url): string
@@ -45,68 +59,6 @@ class Url
         }
 
         return self::normalizePath($url);
-    }
-
-    /**
-     * Extracts and returns query parameters from a URL as an array
-     *
-     * @return array<string, string>
-     */
-    public static function extractQueries(string $url): array
-    {
-        // If URL is invalid, return empty array
-        if (! self::isValid($url)) {
-            return [];
-        }
-
-        // Parse the URL and extract query string
-        $parsedUrl = parse_url($url);
-        if (! isset($parsedUrl['query'])) {
-            return [];
-        }
-
-        // Parse query string into array
-        $queryParams = [];
-        parse_str($parsedUrl['query'], $queryParams);
-
-        return $queryParams;
-    }
-
-    /**
-     * Concatenates a URL with query parameters
-     *
-     * @param  array<string, string>  $queries
-     */
-    public static function concatQueries(string $url, array $queries): string
-    {
-        // If no queries provided, return the original URL
-        if (empty($queries)) {
-            return $url;
-        }
-
-        // Check if URL already has query parameters
-        $hasQueries = str_contains($url, '?');
-
-        // Build query string from new queries
-        $queryString = http_build_query($queries);
-
-        // Concatenate properly based on existing query parameters
-        if ($hasQueries) {
-            return $url.'&'.$queryString;
-        }
-
-        return $url.'?'.$queryString;
-    }
-
-    /**
-     * Checks if the given string is a relative path
-     */
-    private static function isRelativePath(string $path): bool
-    {
-        // Path must start with / and not contain protocol or domain
-        return str_starts_with($path, '/') &&
-               ! str_contains($path, '://') &&
-               ! preg_match('/^\/\//', $path);
     }
 
     /**
@@ -167,5 +119,75 @@ class Url
         }
 
         return $path;
+    }
+
+    public static function getRedirect(string $serverPath): ?Redirect
+    {
+        $queries = self::extractQueries($serverPath);
+        $currentPath = self::normalizeUrl($serverPath);
+
+        $redirection = Redirection::get($currentPath);
+
+        if (! $redirection) {
+            return null;
+        }
+
+        $targetUrl = Redirection::targetUrl($redirection);
+        $redirectType = Redirection::redirectType($redirection);
+
+        $redirectUrl = self::concatQueries($targetUrl, $queries);
+
+        return new Redirect($redirectUrl, $redirectType);
+    }
+
+    /**
+     * Extracts and returns query parameters from a URL as an array
+     *
+     * @return array<string, string>
+     */
+    private static function extractQueries(string $url): array
+    {
+        // If URL is invalid, return empty array
+        if (! self::isValid($url)) {
+            return [];
+        }
+
+        // Parse the URL and extract query string
+        $parsedUrl = parse_url($url);
+        if (! isset($parsedUrl['query'])) {
+            return [];
+        }
+
+        // Parse query string into array
+        $queryParams = [];
+        parse_str($parsedUrl['query'], $queryParams);
+
+        return $queryParams;
+    }
+
+    /**
+     * Concatenates a URL with query parameters
+     *
+     * @param  array<string, string>  $queries
+     */
+    private static function concatQueries(string $url, array $queries): string
+    {
+        // If no queries provided, return the original URL
+        if (empty($queries)) {
+            return $url;
+        }
+
+        // Check if URL already has query parameters
+        $hasQueries = str_contains($url, '?');
+
+        // Build query string from new queries
+        $queryString = http_build_query($queries);
+
+        // Concatenate properly based on existing query parameters
+        if ($hasQueries) {
+            return $url.'&'.$queryString;
+        }
+
+        return $url.'?'.$queryString;
     }
 }

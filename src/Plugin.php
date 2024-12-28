@@ -2,7 +2,7 @@
 
 namespace PNerd\QuickRedirectManager;
 
-use PNerd\QuickRedirectManager\Lib\Redirector;
+use PNerd\QuickRedirectManager\Lib\Url;
 
 class Plugin
 {
@@ -53,7 +53,7 @@ class Plugin
 
         $serverPath = $_SERVER['REQUEST_URI'];
 
-        $redirect = (new Redirector)->getRedirect($serverPath);
+        $redirect = Url::getRedirect($serverPath);
 
         if (! $redirect) {
             return;
