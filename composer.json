@@ -2,6 +2,7 @@
     "name": "p-nerd/quick-redirect-manager",
     "description": "A lightweight, user-friendly plugin to manage URL redirections",
     "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
     "autoload": {
         "psr-4": {
             "PNerd\\QuickRedirectManager\\": "src/"
@@ -13,5 +14,7 @@
             "email": "shihab4t@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "php": ">=7.4"
+    }
 }
