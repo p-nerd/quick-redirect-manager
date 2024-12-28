@@ -1,20 +1,14 @@
 <?php
 
-namespace PNerd\QuickRedirectManager;
+namespace PNerd\QuickRedirectManager\Lib;
+
+use PNerd\QuickRedirectManager\DTO\Redirect;
+use PNerd\QuickRedirectManager\Redirection;
 
 class Redirector
 {
-    public function __construct()
+    public function getRedirect(string $serverPath): ?Redirect
     {
-        add_action('template_redirect', [$this, 'handleRedirection']);
-    }
-
-    public function handleRedirection(): void
-    {
-        if (is_admin()) {
-            return;
-        }
-
         $serverPath = $_SERVER['REQUEST_URI'];
 
         $queries = Url::extractQueries($serverPath);
@@ -23,7 +17,7 @@ class Redirector
         $redirection = Redirection::get($currentPath);
 
         if (! $redirection) {
-            return;
+            return null;
         }
 
         $targetUrl = Redirection::targetUrl($redirection);
@@ -31,12 +25,6 @@ class Redirector
 
         $redirectUrl = Url::concatQueries($targetUrl, $queries);
 
-        $this->performRedirect($redirectUrl, $redirectType);
-    }
-
-    private function performRedirect(string $url, int $status): void
-    {
-        wp_redirect($url, $status);
-        exit;
+        return new Redirect($redirectUrl, $redirectType);
     }
 }

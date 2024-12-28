@@ -2,12 +2,13 @@
 
 namespace PNerd\QuickRedirectManager;
 
+use PNerd\QuickRedirectManager\Lib\Redirector;
+
 class Plugin
 {
     public function __construct()
     {
         new Admin;
-        new Redirector;
 
         // Register activation hook
         register_activation_hook(
@@ -19,6 +20,12 @@ class Plugin
         add_filter(
             'plugin_action_links_'.plugin_basename(dirname(__DIR__).'/quick-redirect-manager.php'),
             [$this, 'addSettingsLink']
+        );
+
+        // Register redirect template
+        add_action(
+            'template_redirect',
+            [$this, 'handleRedirection']
         );
     }
 
@@ -36,5 +43,22 @@ class Plugin
         array_unshift($links, $settings_link);
 
         return $links;
+    }
+
+    public function handleRedirection(): void
+    {
+        if (is_admin()) {
+            return;
+        }
+
+        $serverPath = $_SERVER['REQUEST_URI'];
+
+        $redirect = (new Redirector)->getRedirect($serverPath);
+
+        if (! $redirect) {
+            return;
+        }
+        wp_redirect($redirect->url, $redirect->status);
+        exit;
     }
 }

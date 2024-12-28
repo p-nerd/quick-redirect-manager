@@ -2,6 +2,9 @@
 
 namespace PNerd\QuickRedirectManager;
 
+use PNerd\QuickRedirectManager\Lib\Url;
+use PNerd\QuickRedirectManager\Lib\View;
+
 class Admin
 {
     public function __construct()

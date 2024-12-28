@@ -1,10 +1,10 @@
 <?php
 
-namespace PNerd\QuickRedirectManager;
+namespace PNerd\QuickRedirectManager\Lib;
 
 class View
 {
-    public const VIEW_BASE_PATH = __DIR__.'/../views';
+    public const VIEW_BASE_PATH = __DIR__.'/../../views';
 
     public static function render(string $name, array $data = []): string
     {

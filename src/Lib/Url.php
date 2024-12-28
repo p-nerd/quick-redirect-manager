@@ -1,6 +1,6 @@
 <?php
 
-namespace PNerd\QuickRedirectManager;
+namespace PNerd\QuickRedirectManager\Lib;
 
 class Url
 {
