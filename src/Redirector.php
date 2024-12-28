@@ -2,14 +2,17 @@
 
 namespace PNerd\QuickRedirectManager;
 
-class Redirector {
+class Redirector
+{
     private $option_name = 'qrm_redirections';
 
-    public function __construct() {
+    public function __construct()
+    {
         add_action('template_redirect', [$this, 'handleRedirection']);
     }
 
-    public function handleRedirection() {
+    public function handleRedirection()
+    {
         if (is_admin()) {
             return;
         }
@@ -17,7 +20,7 @@ class Redirector {
         $current_url = $_SERVER['REQUEST_URI'];
         $redirects = get_option($this->option_name, []);
 
-        if (!isset($redirects[$current_url])) {
+        if (! isset($redirects[$current_url])) {
             return;
         }
 
