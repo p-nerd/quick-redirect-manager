@@ -56,9 +56,9 @@ class Plugin
             if (! $redirect) {
                 return;
             }
-
             // Ensure headers haven't been sent yet
             if (! headers_sent()) {
+                error_log('Redirecting to '.$redirect->url);
                 wp_redirect($redirect->url, $redirect->status);
                 exit;
             }
