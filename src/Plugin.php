@@ -9,7 +9,6 @@ class Plugin
     public function __construct()
     {
         new Admin;
-
         // Register activation hook
         register_activation_hook(
             dirname(__DIR__).'/quick-redirect-manager.php',
@@ -22,10 +21,11 @@ class Plugin
             [$this, 'addSettingsLink']
         );
 
-        // Register redirect template
+        // Register redirect template - set to a higher priority (lower number)
         add_action(
             'template_redirect',
-            [$this, 'handleRedirection']
+            [$this, 'handleRedirection'],
+            1
         );
     }
 
@@ -47,18 +47,26 @@ class Plugin
 
     public function handleRedirection(): void
     {
-        if (is_admin()) {
-            return;
-        }
-
         $serverPath = $_SERVER['REQUEST_URI'];
 
-        $redirect = Url::getRedirect($serverPath);
+        // Add error handling
+        try {
+            $redirect = Url::getRedirect($serverPath);
 
-        if (! $redirect) {
+            if (! $redirect) {
+                return;
+            }
+
+            // Ensure headers haven't been sent yet
+            if (! headers_sent()) {
+                wp_redirect($redirect->url, $redirect->status);
+                exit;
+            }
+        } catch (\Exception $e) {
+            // Log error if needed
+            error_log('Quick Redirect Manager: '.$e->getMessage());
+
             return;
         }
-        wp_redirect($redirect->url, $redirect->status);
-        exit;
     }
 }
