@@ -16,6 +16,10 @@ A lightweight WordPress URL redirection manager that uses WordPress's native opt
 -   Lightweight - uses WordPress options table (no additional tables)
 -   Built with performance in mind
 
+## Dashboard
+
+![dashboard](./assets/dashboard.webp)
+
 ## 📋 Requirements
 
 -   PHP 8.0 or higher

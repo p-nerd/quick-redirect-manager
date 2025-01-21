@@ -13,6 +13,6 @@ if [ "$1" = "zip" ]; then
     composer install
 
     echo "[INFO] Zipping the current directory..."
-    zip -r "$NAME" .
+    zip -r "$NAME" . -x "*.DS_Store"
     echo "[SUCCESS] Zipped the current directory and created $NAME"
 fi
