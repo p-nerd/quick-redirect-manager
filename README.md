@@ -13,8 +13,6 @@ A lightweight WordPress URL redirection manager that uses WordPress's native opt
 -   Multiple redirection types:
     -   Internal path to internal path (`/old-page` → `/new-page`)
     -   Internal path to external URL (`/external-link` → `https://example.com`)
-    -   Full URL to internal path (`https://yourdomain.com/old-page` → `/new-page`)
-    -   Full URL to external URL (`https://yourdomain.com/old-page` → `https://example.com`)
 -   Lightweight - uses WordPress options table (no additional tables)
 -   Built with performance in mind
 
@@ -22,22 +20,6 @@ A lightweight WordPress URL redirection manager that uses WordPress's native opt
 
 -   PHP 8.0 or higher
 -   WordPress 5.0 or higher
--   Composer
-
-## ⚡ Installation
-
-### Via Composer (Recommended)
-
-```bash
-composer require p-nerd/quick-redirect-manager
-```
-
-### Manual Installation
-
-1. Download the latest release
-2. Upload to `/wp-content/plugins/`
-3. Run `composer install`
-4. Activate through WordPress admin
 
 ## 🔧 Usage
 
@@ -47,18 +29,6 @@ composer require p-nerd/quick-redirect-manager
     - Enter target URL (redirect to)
     - Select redirect type (301 or 302)
     - Click "Add Redirection"
-
-### Example Redirects
-
-```plaintext
-Internal redirect:
-From: /old-page
-To: /new-page
-
-External redirect:
-From: /go/twitter
-To: https://twitter.com/your-profile
-```
 
 ## 💻 Development
 
