@@ -2,10 +2,6 @@
 
 A lightweight WordPress URL redirection manager that uses WordPress's native options table for storage. Perfect for managing redirects without the overhead of additional database tables.
 
-![GitHub](https://img.shields.io/github/license/p-nerd/quick-redirect-manager)
-![PHP Version](https://img.shields.io/badge/PHP-8.0%2B-blue)
-![WordPress Version](https://img.shields.io/badge/WordPress-5.0%2B-blue)
-
 ## 🚀 Features
 
 -   Simple and intuitive WordPress admin interface
