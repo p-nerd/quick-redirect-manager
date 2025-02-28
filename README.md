@@ -1,8 +1,8 @@
-# Quick Redirect Manager
-
 <p align="center">
   <img src="./assets/logo.svg" alt="Quick Redirect Manager Logo" width="200" height="200" />
 </p>
+
+# Quick Redirect Manager
 
 A lightweight WordPress URL redirection manager that uses WordPress's native options table for storage. Perfect for managing redirects without the overhead of additional database tables.
 
