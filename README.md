@@ -2,7 +2,7 @@
   <img src="./assets/logo.svg" alt="Quick Redirect Manager Logo" width="200" height="200" />
 </p>
 
-# Quick Redirect Manager
+<h1 align="center">Quick Redirect Manager</h1>
 
 A lightweight WordPress URL redirection manager that uses WordPress's native options table for storage. Perfect for managing redirects without the overhead of additional database tables.
 
@@ -55,4 +55,5 @@ Licensed under the GPL v2 or later - see the [LICENSE](LICENSE) file for details
 **Shihab Mahamud**
 
 - Email: shihab4t@gmail.com
+- Website: [https://developershihab.com](https://developershihab.com)
 - GitHub: [@p-nerd](https://github.com/p-nerd)
